@@ -1,4 +1,4 @@
-package courseScrapper;
+package courseScraper;
 
 public class Splitter {
 

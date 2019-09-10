@@ -2,9 +2,8 @@
  *  Scrapper for video courses on coursehunter.net
  */
 
-package courseScrapper;
+package courseScraper;
 
-import org.apache.commons.io.FileUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -32,12 +31,12 @@ public class Scraper {
     private String readProps(String propertyName){
         String result = "";
         try{
-            InputStream inp = Scraper.class.getResourceAsStream("/course.properties");
+            InputStream inp = Scraper.class.getResourceAsStream("/config.properties");
             Properties props = new Properties();
             props.load(inp);
             return props.getProperty(propertyName);
         }catch (IOException e){
-            System.out.println("-- error while reading course.properties file");
+            System.out.println("-- error while reading config.properties file");
             e.printStackTrace();
         }
         return result;
@@ -70,7 +69,8 @@ public class Scraper {
         System.out.println("Download of " + file.toString() + " started.");
         try {
             fileLink = new URL(link);
-            FileUtils.copyURLToFile(fileLink, file);
+            Downloader downloader = new Downloader(file, getOneFileSize(link));
+            downloader.download(fileLink);
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -83,14 +83,6 @@ public class Scraper {
         getFilesSize(links);
     }
 
-    // Nice converter from stackoverflow
-    private static String humanReadableByteCount(long bytes, boolean si) {
-        int unit = si ? 1000 : 1024;
-        if (bytes < unit) return bytes + " B";
-        int exp = (int) (Math.log(bytes) / Math.log(unit));
-        String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp-1) + (si ? "" : "i");
-        return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
-    }
 
     private long getOneFileSize(String link){
         long size = 0L;
@@ -111,10 +103,10 @@ public class Scraper {
         for(int i = 0; i < links.size(); i++){
             String link = links.get(i);
             long size = getOneFileSize(link);
-            System.out.println(i+1 + ". " + Splitter.videoName(link) + " size is: " + humanReadableByteCount(size, true));
+            System.out.println(i+1 + ". " + Splitter.videoName(link) + " size is: " + ByteConverter.humanReadableByteCount(size, true));
             totalSize += size;
         }
-        System.out.println("Course " + Splitter.folderName(links.get(1)) + " total size is: " + humanReadableByteCount(totalSize, true));
+        System.out.println("Course " + Splitter.folderName(links.get(1)) + " total size is: " + ByteConverter.humanReadableByteCount(totalSize, true));
     }
 
     private void download(ArrayList<String> videos){
@@ -129,12 +121,12 @@ public class Scraper {
                 saveFile(video);
             }
         } else if(answer.equals("c")){
-            ArrayList<String> neededVideos = videoChooser.makeArrayOfVideos(videos, videoChooser.chooseVideos());
+            ArrayList<String> neededVideos = VideoChooser.makeArrayOfVideos(videos, VideoChooser.chooseVideos());
             for(String video : neededVideos){
                 saveFile(video);
             }
         } else {
-            System.out.println("Use letters 'y' or 'n'");
+            System.out.println("Use letters 'y', 'n' or 'c'");
             download(videos);
         }
     }

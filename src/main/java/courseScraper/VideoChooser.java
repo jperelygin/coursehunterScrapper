@@ -1,9 +1,9 @@
-package courseScrapper;
+package courseScraper;
 
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class videoChooser {
+public class VideoChooser {
 
     public static ArrayList<String> chooseVideos(){
         System.out.println("Choose videos in format: 'first_video-last_video' or just type number of one video.");
