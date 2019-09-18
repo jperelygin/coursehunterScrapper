@@ -16,7 +16,7 @@ public class Downloader {
 
 
     public Downloader(File file, long endSize) {
-        filePath = file;
+        this.filePath = file;
         this.endSize = endSize;
     }
 
@@ -42,7 +42,6 @@ public class Downloader {
         NumberFormat nf = new DecimalFormat("#0.00");
 
         try {
-            URLConnection conn = link.openConnection();
             in = new BufferedInputStream(link.openStream());
             out = new FileOutputStream(filePath);
             byte data[] = new byte[1024];
@@ -53,7 +52,7 @@ public class Downloader {
                 out.write(data, 0, count);
                 String percents = nf.format(sumCount / endSize * 100.0) + " %";
                 sumCount += count;
-                if (this.endSize > 0) {
+                if (endSize > 0) {
                     System.out.print(percents);
                 }
                 Thread.sleep(50);
